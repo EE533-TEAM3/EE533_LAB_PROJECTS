@@ -21,29 +21,31 @@
 // Pipelined Datapath
 
 // Function to compute log2
-function integer log2;
-    input integer value;
-    integer i;
-    begin
-        log2 = 0;
-        for (i = value; i > 1; i = i >> 1) begin
-            log2 = log2 + 1;
-        end
-    end
-endfunction
+// function integer log2;
+    // input integer value;
+    // integer i;
+    // begin
+        // log2 = 0;
+        // for (i = value; i > 1; i = i >> 1) begin
+            // log2 = log2 + 1;
+        // end
+    // end
+// endfunction
 
 module pipeline_datapath
    #(
 		parameter DATA_WIDTH  = 64,
 		parameter ADDR_WIDTH  = 8,
 		parameter INSTR_WIDTH = 32,
-		parameter NUM_ENTRIES = 512,
-		parameter MEM_DEPTH = log2(NUM_ENTRIES)
+		parameter NUM_ENTRIES = 512
 	)   
 	(
 	input clk,
 	input reset
 	);
+	
+	// Compute log2(NUM_ENTRIES) for memory depth
+	localparam MEM_DEPTH = $clog2(NUM_ENTRIES);
 
 	//Instruction Count for address of I-Mem
     reg [MEM_DEPTH-1:0] PC; 		
@@ -66,7 +68,7 @@ module pipeline_datapath
 //-------------------Pipeline Registers-------------------
 	
 	//Instruction Mem
-	reg [DATA_WIDTH-1:0] imem_pipereg; 	   //Instruction Memory Pipeline Register
+	reg [INSTR_WIDTH-1:0] imem_pipereg; 	   //Instruction Memory Pipeline Register
 	
 	//Register File 1
 	reg rf1_wreg_en;
@@ -95,10 +97,11 @@ module pipeline_datapath
 	
 	//Module Instantiations
 	
-	i_mem i_mem(
+	imem32x512 imem32x512(
 	
 		//inputs
-		.address(PC),
+		.addr(PC),
+		.clk(clk),
 		
 		//outputs
 		.dout(imem_dout_wire)
@@ -119,10 +122,10 @@ module pipeline_datapath
 	);
 	
 	Data_Mem #(
-    parameter ADDR_WIDTH = 8,   // Default: 8-bit address (256 locations)
-    parameter INSTR_WIDTH = 64,  // Default: 64-bit data per entry
-    parameter MEM_DEPTH = 256,  // Default: 256 memory entries
-    parameter INIT_FILE = "Data_MM.hex" // Default memory initialization file
+         .ADDR_WIDTH(ADDR_WIDTH),   // Default: 8-bit address (256 locations)
+         .DATA_WIDTH(DATA_WIDTH),  // Default: 64-bit data per entry
+         .MEM_DEPTH(256),  // Default: 256 memory entries
+         .INIT_FILE ("Data_MM.hex") // Default memory initialization file
 )Data_Mem(
 	
 		//inputs
@@ -173,7 +176,7 @@ module pipeline_datapath
 		end
 		else begin
 			//Instruction Fetch
-			PC <= PC + 8;
+			PC <= PC + 1; //We increment by one in the imem
 			
 			// IMEM/REGFILE
 			imem_pipereg <= imem_dout_wire;
@@ -200,32 +203,9 @@ module pipeline_datapath
 			
 			
 			
-			// Instruction Logic
-			case (imem_pipereg[31:30]) 
-			  2'b00: begin 
-				 //NOP
-			  end
-			  2'b01: begin // Load instruction (e.g., LW)
-				 
-			  end
-			  2'b10: begin // Store instruction (e.g., SW)
-				 
-			  end
-			  2'b11: begin 
-				 //NOP
-			  end
-			  default: begin
-				 rf1_wreg_en = 0;
-				 rf1_wmem_en = 0;
-			  end
-		    endcase
-			
-			
-			
 			
 		end
 	
 	end
 	
 endmodule
-
