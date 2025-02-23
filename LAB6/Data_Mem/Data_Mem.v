@@ -14,7 +14,7 @@ module Data_Mem #(
 );
 
     // Parameterized memory array
-    reg [DATA_WIDTH-1:0] Memory [MEM_DEPTH-1:0];
+    (* ram_style = "distributed" *) reg [DATA_WIDTH-1:0] Memory [MEM_DEPTH-1:0];
 
     // Read Operation (Synchronous Read at posedge clk)
     always @(posedge clk)
