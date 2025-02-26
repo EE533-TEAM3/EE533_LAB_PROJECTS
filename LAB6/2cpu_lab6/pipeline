@@ -184,8 +184,9 @@ if ($cmd eq "reset") {
     silent_regwrite($PIPELINE_DATAPATH_IMEM_WDATA_REG, $wdata);
 	
 	# Put back to safe mode
-    silent_regwrite($PIPELINE_DATAPATH_IMEM_INTERACT_REG, 0x0);  # Interact with imem
+    
     silent_regwrite($PIPELINE_DATAPATH_IMEM_WRITE_REG, 0x0);     # Set to write mode
+	silent_regwrite($PIPELINE_DATAPATH_IMEM_INTERACT_REG, 0x0);  # Interact with imem
     
 	printf("Wrote %x to address: %x \n", $wdata, $address); 
 	
