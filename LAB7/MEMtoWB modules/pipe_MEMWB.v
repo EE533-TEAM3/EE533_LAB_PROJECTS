@@ -37,7 +37,7 @@
 module pipe_MEMWB 
 	#(
 		parameter DATA_WIDTH  = 64,
-		parameter REGFILE_ADDRESS_WIDTH  = 8
+		parameter REGFILE_ADDRESS_WIDTH  = 5
 	) 
 	(
     input         					              clk,                   // Clock
@@ -46,30 +46,26 @@ module pipe_MEMWB
     
 	
 	input  [DATA_WIDTH-1:0]                       mem_read_data_in,      // Data read from memory
-    input  [DATA_WIDTH-1:0]                       alu_result_in,         // ALU result from MEM stage
     input  [REGFILE_ADDRESS_WIDTH-1:0]            rd_in,                 // Destination register
-    input                                         reg_write_in,          // Control signal: Write to register?
+	input  [DATA_WIDTH-1:0]						  reg_data_in,			 // REG_data
     input                                         mem_to_reg_in,         // Control signal: Select memory or ALU result
     
     output reg [DATA_WIDTH-1:0]                   mem_read_data_out,     // Data read from memory
-    output reg [DATA_WIDTH-1:0]                   alu_result_out,        // ALU result to WB stage
     output reg [REGFILE_ADDRESS_WIDTH-1:0]        rd_out,                // Destination register
-    output reg                                    reg_write_out,         // Control: Write to register?
+	output reg [DATA_WIDTH-1:0]					  reg_data_out,			 // REG_data
     output reg                                    mem_to_reg_out         // Control: Select memory or ALU result
 );
 
 always @(posedge clk or posedge reset) begin
-    if (reset) begin
-        mem_read_data_out <= 32'b0;
-        alu_result_out    <= 32'b0;
+    if (reset || !enable) begin
+        mem_read_data_out <= 64'b0;
         rd_out            <= 5'b0;
-        reg_write_out     <= 1'b0;
+        reg_data_out 	  <= 64'b0;
         mem_to_reg_out    <= 1'b0;
     end else if (enable) begin
         mem_read_data_out <= mem_read_data_in;
-        alu_result_out    <= alu_result_in;
         rd_out            <= rd_in;
-        reg_write_out     <= reg_write_in;
+        reg_data_out      <= reg_data_in;
         mem_to_reg_out    <= mem_to_reg_in;
     end
 end
