@@ -3,10 +3,10 @@ module PC_Mux
    parameter DATA_WIDTH = 64
 )
 (
-   input PCSrc_i,
-   input [DATA_WIDTH - 1 : 0] PC_i, 
-   input [DATA_WIDTH - 1 : 0] PCPlusOffset,
-   output [[DATA_WIDTH - 1 : 0]] PCMuxOut
+   input                            PCSrc_i,
+   input       [DATA_WIDTH - 1 : 0] PC_i,
+   input       [DATA_WIDTH - 1 : 0] PCPlusOffset,
+   output reg  [DATA_WIDTH - 1 : 0] PCMuxOut
 );
 
    always @(*)
