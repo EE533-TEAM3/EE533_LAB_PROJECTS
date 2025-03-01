@@ -45,7 +45,7 @@ module stage_MEMtoWB
         input  [DATA_WIDTH-1:0]            		alu_result_in,       // ALU result from EX stage
         input  [DATA_WIDTH-1:0]            		mem_write_data_in,   // Data to be written to memory
         input  [REGFILE_ADDRESS_WIDTH-1:0] 		rd_in,               // Destination register
-        input                              		mem_write_in,        // Control signal: Write to memory?
+        input                              		mem_write_enable_in, // Control signal: Write to memory?
 	    input									write_back_in,		 // Control signal: Write back?
 		
 		
@@ -55,10 +55,10 @@ module stage_MEMtoWB
     );
 
 	//Outputs of the EX/MEM pipeline register
-	wire [DATA_WIDTH-1:0]        			    exmem_alu_result_out;      // ALU result to WB stage
-    wire [DATA_WIDTH-1:0]        			    exmem_mem_write_data_out;  // Data for memory write
-    wire [REGFILE_ADDRESS_WIDTH-1:0]  		    exmem_rd_out;          	   // Destination register
-    wire                         			    exmem_mem_write_out;       // Control: Write to memory?
+	wire [DATA_WIDTH-1:0]        			    exmem_alu_result_out;       // ALU result to WB stage
+    wire [DATA_WIDTH-1:0]        			    exmem_mem_write_data_out;   // Data for memory write
+    wire [REGFILE_ADDRESS_WIDTH-1:0]  		    exmem_rd_out;          	    // Destination register
+    wire                         			    exmem_mem_write_enable_out; // Control: Write to memory?
 	wire									    exmem_write_back_out;       // Control: Write back?
 	
 	
@@ -88,7 +88,7 @@ module stage_MEMtoWB
         .rd_in(rd_in),
         //.reg_write_in(reg_write_in),
         //.mem_read_in(mem_read_in),
-        .mem_write_in(mem_write_in),
+        .mem_write_enable_in(mem_write_enable_in),
 		.write_back_in(write_back_in),
         
         // Outputs from pipeline
@@ -97,7 +97,7 @@ module stage_MEMtoWB
         .rd_out(exmem_rd_out),
         //.reg_write_out(reg_write_out),
         //.mem_read_out(mem_read_out),
-        .mem_write_out(exmem_mem_write_out),
+        .mem_write_enable_out(exmem_mem_write_enable_out),
 		.write_back_out(exmem_write_back_out)
     );
 	
@@ -108,7 +108,7 @@ module stage_MEMtoWB
 		.INIT_FILE("Data_MM.hex")
 	) Data_Mem (
 		.clk(clk),
-		.Write_Enable(exmem_mem_write_out),
+		.Write_Enable(exmem_mem_write_enable_out),
 		.Address(exmem_alu_result_out[7:0]),
 		.WData(exmem_mem_write_data_out),
 		.Dout(dmem_out)

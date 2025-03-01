@@ -52,7 +52,7 @@ module pipe_EXMEM
 		input 								   write_back_in,		// Control signal: Write back?
 		//input        			   			   reg_write_in,        // Control signal: Write to register?
 		//input        			   			   mem_read_in,         // Control signal: Read from memory?
-		input        			   			   mem_write_in,        // Control signal: Write to memory?
+		input        			   			   mem_write_enable_in,        // Control signal: Write to memory?
 		
 		output reg 							   write_back_out,       // Control signal: Write back?
 		output reg [DATA_WIDTH-1:0] 		   alu_result_out,  	 // ALU result to MEM stage
@@ -60,27 +60,27 @@ module pipe_EXMEM
 		output reg [4:0]  		   			   rd_out,          	 // Destination register
 		//output reg        		   			   reg_write_out,   	 // Control: Write to register?
 		//output reg        		   			   mem_read_out,     // Control: Read from memory?
-		output reg        		   			   mem_write_out    	 // Control: Write to memory?
+		output reg        		   			   mem_write_enable_out    	 // Control: Write to memory?
 	);
    
    
 	always @(posedge clk or posedge reset) begin
 		if (reset) begin
-			alu_result_out     <= 32'b0;
-			mem_write_data_out <= 32'b0;
-			rd_out             <= 5'b0;
+			alu_result_out       <= 32'b0;
+			mem_write_data_out   <= 32'b0;
+			rd_out               <= 5'b0;
 			//reg_write_out      <= 1'b0;
 			//mem_read_out       <= 1'b0;
-			mem_write_out      <= 1'b0;
-			write_back_out     <= 1'b0;
+			mem_write_enable_out <= 1'b0;
+			write_back_out       <= 1'b0;
 		end else if (enable) begin
-			alu_result_out     <= alu_result_in;
-			mem_write_data_out <= mem_write_data_in;
-			rd_out             <= rd_in;
-			//reg_write_out      <= reg_write_in;
-			//mem_read_out       <= mem_read_in;
-			mem_write_out      <= mem_write_in;
-			write_back_out     <= write_back_in;
+			alu_result_out            <= alu_result_in;
+			mem_write_data_out        <= mem_write_data_in;
+			rd_out                    <= rd_in;
+			//reg_write_out           <= reg_write_in;
+			//mem_read_out            <= mem_read_in;
+			mem_write_enable_out      <= mem_write_enable_in;
+			write_back_out            <= write_back_in;
 		end
 	end
 	
