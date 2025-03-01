@@ -9,10 +9,10 @@ z2
 cModel Technology
 Z0 dC:/questasim64_10.4c/examples
 T_opt
-!s110 1740729656
-VMHU7:LYRjk<STzoVoA;R@0
+!s110 1740772680
+VXBhha38DU79RWOdMXlneN3
 04 16 4 work stage_MEMtoWB_tb fast 0
-=1-244bfe875437-67c16d37-2b8-4058
+=1-244bfe875437-67c21547-260-5848
 o-quiet -auto_acc_if_foreign -work work
 n@_opt
 OL;O;10.4c;61
@@ -31,7 +31,7 @@ w1740550369
 FC:/VirtualBoxShare/Lab7/Pipeline/Data_Mem.v
 L0 3
 Z3 OL;L;10.4c;61
-Z4 !s108 1740731848.000000
+Z4 !s108 1740789478.000000
 !s107 C:/VirtualBoxShare/Lab7/Pipeline/Data_Mem.v|
 !s90 -reportprogress|300|-work|work|-vopt|-stats=none|C:/VirtualBoxShare/Lab7/Pipeline/Data_Mem.v|
 !i113 0
@@ -82,10 +82,10 @@ r1
 !s85 0
 31
 !i10b 1
-!s100 `ib2_`ZeYQ24j^dfG?fe^1
-I32k3I=mb9?FkWikD>8]LY2
+!s100 c2^IoBIUQ38JEGeM_ReZH1
+IGNbWB6kS23[On537MdeG30
 R2
-w1740726780
+w1740773999
 8C:/VirtualBoxShare/Lab7/Pipeline/pipe_EXMEM.v
 FC:/VirtualBoxShare/Lab7/Pipeline/pipe_EXMEM.v
 Z11 L0 37
@@ -122,17 +122,17 @@ r1
 !s85 0
 31
 !i10b 1
-!s100 ;e<^i[KlgVNi0zZRfRn3<3
-IT<mcSZB?zlLP[dCU?GT^I2
+!s100 [M@@<Y51aNlnM1lPhTSaS3
+I4@9nk?XjCkhO:LK8BVE^e0
 R2
-w1740731271
-8C:\VirtualBoxShare\Lab7\Pipeline\stage_MEMtoWB.v
-FC:\VirtualBoxShare\Lab7\Pipeline\stage_MEMtoWB.v
+w1740774059
+8C:/VirtualBoxShare/Lab7/Pipeline/stage_MEMtoWB.v
+FC:/VirtualBoxShare/Lab7/Pipeline/stage_MEMtoWB.v
 L0 35
 R3
 R4
-!s107 C:\VirtualBoxShare\Lab7\Pipeline\stage_MEMtoWB.v|
-!s90 -reportprogress|300|-work|work|-vopt|-stats=none|C:\VirtualBoxShare\Lab7\Pipeline\stage_MEMtoWB.v|
+!s107 C:/VirtualBoxShare/Lab7/Pipeline/stage_MEMtoWB.v|
+!s90 -reportprogress|300|-work|work|-vopt|-stats=none|C:/VirtualBoxShare/Lab7/Pipeline/stage_MEMtoWB.v|
 !i113 0
 R5
 nstage_@m@e@mto@w@b
@@ -142,17 +142,17 @@ r1
 !s85 0
 31
 !i10b 1
-!s100 PJIVH>iKB1M_J_R`NLf9z1
-IT4Z^]GXT@5zIbj077:YZ01
+!s100 HVf29llH3naiAT@j<I>3A2
+I8AngzU5KZ>g]NKbNGfV;j3
 R2
-w1740731583
-8C:\VirtualBoxShare\Lab7\Pipeline\stage_MEMtoWB_tb.v
-FC:\VirtualBoxShare\Lab7\Pipeline\stage_MEMtoWB_tb.v
+w1740789472
+8C:/VirtualBoxShare/Lab7/Pipeline/stage_MEMtoWB_tb.v
+FC:/VirtualBoxShare/Lab7/Pipeline/stage_MEMtoWB_tb.v
 L0 21
 R3
 R4
-!s107 C:\VirtualBoxShare\Lab7\Pipeline\stage_MEMtoWB_tb.v|
-!s90 -reportprogress|300|-work|work|-vopt|-stats=none|C:\VirtualBoxShare\Lab7\Pipeline\stage_MEMtoWB_tb.v|
+!s107 C:/VirtualBoxShare/Lab7/Pipeline/stage_MEMtoWB_tb.v|
+!s90 -reportprogress|300|-work|work|-vopt|-stats=none|C:/VirtualBoxShare/Lab7/Pipeline/stage_MEMtoWB_tb.v|
 !i113 0
 R5
 nstage_@m@e@mto@w@b_tb
