@@ -1,4 +1,7 @@
 module Mux2x1
+#(
+   parameter DATA_WIDTH = 64
+)
 (
    input    [DATA_WIDTH - 1 : 0] in1,
    input    [DATA_WIDTH - 1 : 0] in2,
@@ -6,6 +9,6 @@ module Mux2x1
    output   [DATA_WIDTH - 1 : 0] out
 );
 
-   assign out = sel ? in2 : in1;
+   assign out = sel ? in1 : in2;
 
 endmodule

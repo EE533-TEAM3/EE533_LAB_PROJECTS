@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+//`timescale 1ns / 1ps
 
 module Data_Mem #(
     parameter ADDR_WIDTH = 8,   // Default: 8-bit address (256 locations)
@@ -6,10 +6,11 @@ module Data_Mem #(
     parameter MEM_DEPTH  = 256,  // Default: 256 memory entries
     parameter INIT_FILE  = "Data_MM.hex" // Default memory initialization file
 )(
-    input                           clock,         // Synchronous clock
-    input                           Write_Enable,  // Write Enable signal
-    input       [ADDR_WIDTH-1:0]    Address,       // Single Address input (for both Read & Write)
-    input       [DATA_WIDTH-1:0]    WData,         // Write Data input
+    input                           clock       ,  // Synchronous clock
+    input                           memWrite_i  ,  // Write Enable signal
+    input                           MemRead_i   ,
+    input       [ADDR_WIDTH-1:0]    Address     ,  // Single Address input (for both Read & Write)
+    input       [DATA_WIDTH-1:0]    WData       ,  // Write Data input
     output reg  [DATA_WIDTH-1:0]    Dout           // Read Data output
 );
 
@@ -19,13 +20,14 @@ module Data_Mem #(
     // Read Operation (Synchronous Read at posedge clock )
     always @(posedge clock)
     begin
-        Dout <= Memory[Address]; // Read data from memory
+        if(MemRead_i)
+           Dout <= Memory[Address]; // Read data from memory
     end
 
-    // Write Operation (Triggered at negedge clock , controlled by Write_Enable)
-    always @(negedge clock) 
+    // Write Operation (Triggered at negedge clock , controlled by memWrite_i )
+    always @(negedge clock)
     begin
-        if (Write_Enable) 
+        if (memWrite_i)
         begin
             Memory[Address] <= WData; // Store data in memory at the same Address
         end
@@ -54,7 +56,7 @@ endmodule
 //     parameter INIT_FILE = "Data_MM.hex" // Default memory initialization file
 // )(
 //     input wire clock ,                             // Synchronous clock
-//     input wire Write_Enable,                    // Write Enable signal
+//     input wire memWrite_i ,                    // Write Enable signal
 //     input wire [ADDR_WIDTH-1:0] Read_Addr,      // Read Address
 //     //input wire [ADDR_WIDTH-1:0] Write_Addr,     // Write Address
 //     input wire [DATA_WIDTH-1:0] Write_Data,     // Input data to write
@@ -69,10 +71,10 @@ endmodule
 //         Read_Data <= Memory[Read_Addr]; // Load data from memory
 //     end
 
-//     // Write Operation (Triggered at negedge clock , controlled by Write_Enable)
+//     // Write Operation (Triggered at negedge clock , controlled by memWrite_i )
 //     always @(negedge clock ) 
 //     begin
-//         if (Write_Enable) 
+//         if (memWrite_i ) 
 //         begin
 //             Memory[Write_Addr] <= Write_Data; // Store data in memory
 //         end

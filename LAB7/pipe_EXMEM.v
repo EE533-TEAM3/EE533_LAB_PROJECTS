@@ -21,7 +21,7 @@ module pipe_EXMEM
       output reg [4:0]              writeReg_o     ,
       output reg [DATA_WIDTH-1 : 0] writeData_mem_o,
       output reg [DATA_WIDTH-1 : 0] aluResult_out  ,
-      output reg                    aluZero        
+      output reg                    aluZero_o       
    );
 
    always @(posedge clock or negedge reset)
@@ -35,9 +35,9 @@ module pipe_EXMEM
          writeReg_o      <= 'd0;
          writeData_mem_o <= 'd0;
          aluResult_out   <= 'd0;
-         aluZero_i       <= 'd0;
+         aluZero_o       <= 'd0;
       end 
-      else if (enable)
+      else //if (enable)
       begin
          memRead_o       <= memRead_i    ;
          memWrite_o      <= memWrite_i   ;

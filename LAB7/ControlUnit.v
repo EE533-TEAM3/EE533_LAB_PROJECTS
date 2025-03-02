@@ -11,6 +11,18 @@ module ControlUnit
    output reg [1 : 0]   ALUop          
 );
 
+   initial
+   begin
+      reg2Loc        = 0;
+      ALUsrc         = 0;
+      memtoReg       = 0;
+      regWrite       = 0;
+      memRead        = 0;
+      memWrite       = 0;
+      branch         = 0;
+      ALUop          = 2'b00;
+   end
+
    always @(*)
    begin
       if(control_instruction_i[10:5] == 6'b000101) // Control bits for B

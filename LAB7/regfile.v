@@ -3,7 +3,7 @@
 module regfile
   #(
    	parameter REGISTERED_OUTPUT = 0,
-      parameter ADDRESS_WIDTH     = 6,
+      parameter ADDRESS_WIDTH     = 5,
       parameter DATA_WIDTH        = 64,
       parameter REGFILE_WIDTH     = 32
   )

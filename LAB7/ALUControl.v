@@ -1,8 +1,8 @@
 module ALUControl
 (
-   input [1:0] ALUop,
-   input [10:0] opcodeField,
-   output reg [3:0] ALUoperation
+   input       [1:0]    ALUop       ,
+   input       [10:0]   opcodeField ,
+   output reg  [3:0]    ALUoperation
 );
 
    always @(*) begin
@@ -15,6 +15,15 @@ module ALUControl
             11'b11001011000 : ALUoperation = 4'b0110; // SUB (R-type)
             11'b10001010000 : ALUoperation = 4'b0000; // AND (R-type)
             11'b10101010000 : ALUoperation = 4'b0001; // ORR (R-type)
+
+                // New operations
+            11'b11001010000 : ALUoperation = 4'b0101; // BITWISE_XNOR
+            11'b10101010010 : ALUoperation = 4'b0110; // COMPARE (same as SUB)
+            11'b11010010000 : ALUoperation = 4'b0111; // LOGICAL_SHIFT_LEFT
+            11'b11010010001 : ALUoperation = 4'b1000; // LOGICAL_SHIFT_RIGHT
+            11'b11010010010 : ALUoperation = 4'b1001; // SHIFT_THEN_COMPARE
+            11'b11010010011 : ALUoperation = 4'b1010; // SUBSTRING_COMPARISON
+
 
             // Immediate Arithmetic (I-Type)
             11'b10010001000 : ALUoperation = 4'b0010; // ADDI

@@ -11,11 +11,11 @@ module PC
    always @(posedge clock, negedge reset)
    begin
       if(!reset)
-         PC_i <= 'd0;
-      else if (PC_i === DATA_WIDTH'bX)
-         PC_i <= 'd0;
+         PC_o <= 'd0;
+      else if (PC_i === 64'bX)
+         PC_o <= 'd0;
       else
-         PC_i <= PC_o;
+         PC_o <= PC_i;
    end
 
 endmodule

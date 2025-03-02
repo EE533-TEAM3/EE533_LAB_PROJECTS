@@ -11,13 +11,13 @@ module ALU
      input                                clock, reset,
      input        [DATA_WIDTH-1 : 0]      alu_in1_i,
      input        [DATA_WIDTH-1 : 0]      alu_in2_i,
-     input        [ADDRESS_WIDTH-1 : 0]   aluctrl_i,
+     input        [3 : 0]                 aluctrl_i,
      input                                cin,
 
      output reg                           cout_o,
      output reg                           alu_a_gt_b,
      output reg                           alu_a_lt_b,
-     output reg                           alu_a_eq_b,
+     output reg                           zero,
 
      output reg   [DATA_WIDTH-1 : 0]      alu_o
    );
@@ -35,16 +35,16 @@ module ALU
    wire                             a_eq_b;
    
 
-   localparam [ADDRESS_WIDTH-1 : 0]    ADD                   = 1,
-                                       SUB                   = 2,
-                                       BITWISE_AND           = 3,
-                                       BITWISE_OR            = 4,
-                                       BITWISE_XNOR          = 5,
-                                       COMPARE               = 6,
-                                       LOGICAL_SHIFT_LEFT    = 7,
-                                       LOGICAL_SHIFT_RIGHT   = 8,
-                                       SHIFT_THEN_COMPARE    = 9,
-                                       SUBSTRING_COMPARISON  = 10;
+   localparam [3 : 0]   ADD                   = 4'b0010,
+                        SUB                   = 4'b0110,
+                        BITWISE_AND           = 4'b0000,
+                        BITWISE_OR            = 4'b0001,
+                        BITWISE_XNOR          = 4'b0101,
+                        COMPARE               = 4'b0110,
+                        LOGICAL_SHIFT_LEFT    = 4'b0111,
+                        LOGICAL_SHIFT_RIGHT   = 4'b1000,
+                        SHIFT_THEN_COMPARE    = 4'b1001,
+                        SUBSTRING_COMPARISON  = 4'b1010;
 
    carry_lookahead
    #(
@@ -78,7 +78,7 @@ module ALU
    );
 
    //Addition or Subtraction//
-   assign add_op_i         = (aluctrl_i == 2) ? 0 : 1;
+   assign add_op_i         = (aluctrl_i == 4'b0010) ? 1 : 0;
    assign sum_or_diff      = res_o;
    //assign cout_o           = cout;
 
@@ -97,7 +97,7 @@ module ALU
 
       //alu_a_gt_b <= 1'b0;
       //alu_a_lt_b <= 1'b0;
-      //alu_a_eq_b <= 1'b0;
+      //zero <= 1'b0;
 
       case(aluctrl_i)
          ADD                  :  begin alu_o    = sum_or_diff; cout_o = cout; end
@@ -109,7 +109,7 @@ module ALU
                                  begin
                                     alu_a_gt_b  = a_gt_b;
                                     alu_a_lt_b  = a_lt_b;
-                                    alu_a_eq_b  = a_eq_b;
+                                    zero        = a_eq_b;
                                  end
          LOGICAL_SHIFT_LEFT   :  alu_o          = alu_in1_i << alu_in2_i;
          LOGICAL_SHIFT_RIGHT  :  alu_o          = alu_in1_i >> alu_in2_i;
