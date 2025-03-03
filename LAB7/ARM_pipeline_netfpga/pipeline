@@ -21,13 +21,31 @@ my @ILA_REGS = (
 );
 
 # Memory Interface Registers
-my $PIPELINE_DATAPATH_IMEM_INTERACT_REG = 0x2001200;
-my $PIPELINE_DATAPATH_IMEM_WRITE_REG = 0x2001204;
-my $PIPELINE_DATAPATH_IMEM_RW_ADDRESS_REG = 0x2001208;
-my $PIPELINE_DATAPATH_IMEM_WDATA_REG = 0x200120c;
-my $PIPELINE_DATAPATH_IMEM_RDATA_REG = 0x2001224;
+#IMEM
+my $PIPELINE_DATAPATH_IMEM_INTERACT_REG = 0x2001000;
+my $PIPELINE_DATAPATH_IMEM_WRITE_REG = 0x2001004;
+my $PIPELINE_DATAPATH_IMEM_RW_ADDRESS_REG = 0x2001008;
+my $PIPELINE_DATAPATH_IMEM_WDATA_REG = 0x200100c;
+my $PIPELINE_DATAPATH_IMEM_RDATA_REG = 0x2001010;
+
+#DMEM
+my $ARM_DATAPATH_DMEM_RDATA_UPPER_0_REG      = 0x2001014;
+my $ARM_DATAPATH_DMEM_RDATA_LOWER_0_REG      = 0x2001018;
+my $ARM_DATAPATH_DMEM_RDATA_UPPER_1_REG      = 0x200101c;
+my $ARM_DATAPATH_DMEM_RDATA_LOWER_1_REG      = 0x2001020;
+my $ARM_DATAPATH_DMEM_RDATA_UPPER_2_REG      = 0x2001024;
+my $ARM_DATAPATH_DMEM_RDATA_LOWER_2_REG      = 0x2001028;
+my $ARM_DATAPATH_DMEM_RDATA_UPPER_3_REG      = 0x200102c;
+my $ARM_DATAPATH_DMEM_RDATA_LOWER_3_REG      = 0x2001030;
+my $ARM_DATAPATH_DMEM_RDATA_UPPER_4_REG      = 0x2001034;
+my $ARM_DATAPATH_DMEM_RDATA_LOWER_4_REG      = 0x2001038;
+my $ARM_DATAPATH_DMEM_RDATA_UPPER_5_REG      = 0x200103c;
+my $ARM_DATAPATH_DMEM_RDATA_LOWER_5_REG      = 0x2001040;
+my $ARM_DATAPATH_DMEM_RDATA_UPPER_6_REG      = 0x2001044;
+my $ARM_DATAPATH_DMEM_RDATA_LOWER_6_REG      = 0x2001048;
 
 
+#DMEM interact (old)
 my $PIPELINE_DATAPATH_DMEM_INTERACT_REG      = 0x2001210;
 my $PIPELINE_DATAPATH_DMEM_WRITE_REG         = 0x2001214;
 my $PIPELINE_DATAPATH_DMEM_RW_ADDRESS_REG    = 0x2001218;
@@ -35,6 +53,7 @@ my $PIPELINE_DATAPATH_DMEM_WDATA_UPPER_REG   = 0x200121c;
 my $PIPELINE_DATAPATH_DMEM_WDATA_LOWER_REG   = 0x2001220;
 my $PIPELINE_DATAPATH_DMEM_RDATA_UPPER_REG   = 0x2001228;
 my $PIPELINE_DATAPATH_DMEM_RDATA_LOWER_REG   = 0x200122c;
+
 
 
 
@@ -122,30 +141,28 @@ sub write_imem {
     printf("Wrote 0x%x to address: %d\n", $wdata, $address);
 }
 
-sub read_dmem {
-    my ($address) = @_;
-    
-    # Setup dmem read operation
-    silent_regwrite($PIPELINE_DATAPATH_DMEM_INTERACT_REG, 0x1);  # Interact with dmem
-    silent_regwrite($PIPELINE_DATAPATH_DMEM_WRITE_REG, 0x0);     # Set to read mode
-    silent_regwrite($PIPELINE_DATAPATH_DMEM_RW_ADDRESS_REG, $address);  # Set the address you want to read
-    
-    # Perform the read
-    my $rdata_high = regread($PIPELINE_DATAPATH_DMEM_RDATA_UPPER_REG);
-    my $rdata_low = regread($PIPELINE_DATAPATH_DMEM_RDATA_LOWER_REG);  # Ensure correct register is used for lower part
-    
-    # Convert hex strings to integers (remove the "0x" and use hex())
-    my $rdata_high_int = hex($rdata_high);
-    my $rdata_low_int = hex($rdata_low);
-    
-    # Combine high and low values to create a 64-bit value
-    my $rdata_64bit = ($rdata_high_int << 32) | $rdata_low_int;
+sub read_all_dmem {
+    my @registers = (
+        [$ARM_DATAPATH_DMEM_RDATA_UPPER_0_REG, $ARM_DATAPATH_DMEM_RDATA_LOWER_0_REG],
+        [$ARM_DATAPATH_DMEM_RDATA_UPPER_1_REG, $ARM_DATAPATH_DMEM_RDATA_LOWER_1_REG],
+        [$ARM_DATAPATH_DMEM_RDATA_UPPER_2_REG, $ARM_DATAPATH_DMEM_RDATA_LOWER_2_REG],
+        [$ARM_DATAPATH_DMEM_RDATA_UPPER_3_REG, $ARM_DATAPATH_DMEM_RDATA_LOWER_3_REG],
+        [$ARM_DATAPATH_DMEM_RDATA_UPPER_4_REG, $ARM_DATAPATH_DMEM_RDATA_LOWER_4_REG],
+        [$ARM_DATAPATH_DMEM_RDATA_UPPER_5_REG, $ARM_DATAPATH_DMEM_RDATA_LOWER_5_REG],
+        [$ARM_DATAPATH_DMEM_RDATA_UPPER_6_REG, $ARM_DATAPATH_DMEM_RDATA_LOWER_6_REG]
+    );
 
-    # Print the concatenated 64-bit value
-    printf("Data at address %d is: 0x%016x\n", $address, $rdata_64bit);
-    
-    # Stop interacting with dmem
-    silent_regwrite($PIPELINE_DATAPATH_DMEM_INTERACT_REG, 0x0); 
+    foreach my $pair (@registers) {
+        my ($upper_addr, $lower_addr) = @$pair;
+        
+        my $upper = regread($upper_addr);
+        my $lower = regread($lower_addr);
+        
+        # Concatenate upper and lower 32-bit values into a 64-bit value
+        my $full_64bit = ($upper << 32) | $lower;
+        
+        printf "DMEM RDATA: 0x%016x\n", $full_64bit;
+    }
 }
 
 sub write_dmem {
@@ -169,6 +186,27 @@ sub write_dmem {
     silent_regwrite($PIPELINE_DATAPATH_DMEM_INTERACT_REG, 0x0);   # Stop interacting with dmem
     
     printf("Wrote 0x%016x to address: %d\n", $wdata, $address);
+}
+
+sub read_alldmem {
+    my ($address) = @_;  
+    
+    # Perform the read
+    my $rdata_high = regread($PIPELINE_DATAPATH_DMEM_RDATA_UPPER_REG);
+    my $rdata_low = regread($PIPELINE_DATAPATH_DMEM_RDATA_LOWER_REG);  # Ensure correct register is used for lower part
+    
+    # Convert hex strings to integers (remove the "0x" and use hex())
+    my $rdata_high_int = hex($rdata_high);
+    my $rdata_low_int = hex($rdata_low);
+    
+    # Combine high and low values to create a 64-bit value
+    my $rdata_64bit = ($rdata_high_int << 32) | $rdata_low_int;
+
+    # Print the concatenated 64-bit value
+    printf("Data at address %d is: 0x%016x\n", $address, $rdata_64bit);
+    
+    # Stop interacting with dmem
+    silent_regwrite($PIPELINE_DATAPATH_DMEM_INTERACT_REG, 0x0); 
 }
 
 
@@ -301,6 +339,13 @@ if ($cmd eq "reset") {
     
     # Call the write_imem function
     write_dmem($address, $wdata);
+	
+	
+} 
+elsif ($cmd eq "read_all_dmem") {
+    
+    
+    read_all_dmem();
 	
 	
 } else {
