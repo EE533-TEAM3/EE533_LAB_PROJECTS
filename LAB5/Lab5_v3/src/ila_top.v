@@ -29,6 +29,7 @@ module ila_top#(
     input clk,                              // System clock
     input rst,                              // Reset
 	input [DATA_WIDTH-1:0] data_in,         // Signal to capture
+	input trigger; //My trigger signal
 	
 
 	// --- Register interface
@@ -199,20 +200,20 @@ generic_regs
 		  
 		    if (!trigger_signal) begin // if no trigger, just keep writing into bram
 			
-				if(data_in) begin
+				if(trigger) begin
 					trigger_signal <= 1; //set trigger
 					trigger_cnt <= 1; //set trigger_cnt to 1
 					//read_addr <= write_addr - 8; //when trigger, set read_addr to a couple addresses before the trigger went high to get before data before the trigger.
-					read_addr <= write_addr;
+					read_addr <= write_addr - 3; //Set read_addr to 3 addressees before trigger so we have some data on before trigger.
 					read_en <= 1;
 				end
 				
 			end
-			else if (trigger_signal && trigger_cnt!=0) begin
-					//write_addr <= write_addr + 1;
-					trigger_cnt <= trigger_cnt + 1;
-					capture_cnt <= capture_cnt + 1;
-					read_addr <= read_addr + 1;
+			else if (trigger_signal && trigger_cnt == 2**THRESHOLD_WIDTH) begin //if the trigger has been on for the threshold width (which is 4 rn)
+					read_en <= 0;
+					trigger_signal <= 0;
+			end
+			else if (trigger_signal) begin // Need this statement to be the last because this should be least priority.
 					
 					case(capture_cnt)
 						3'b000: begin
@@ -248,26 +249,15 @@ generic_regs
 							ila_lower_7 <= captured_data[31:0];  // Lower 32 bits
 						end
 
-
-						/*
-						default: begin
-							
-							ila_lower_4 <= 32'h77777777;
-						end
-						*/
 					endcase
 					
-					/*
-					//capture and split data into registers (i.e. [0][1] = 1st 64 bits , [2][3] = 2nd 64 bits
-					captured_data_regs[capture_cnt] <= captured_data[63:32];  // Upper 32 bits
-					captured_data_regs[capture_cnt+1]   <= captured_data[31:0];  // Lower 32 bits
-					*/
+					trigger_cnt <= trigger_cnt + 1;
+					capture_cnt <= capture_cnt + 1;
+					read_addr <= read_addr + 1;
+					
 					
 			end
-			else if (trigger_signal && trigger_cnt == 2**THRESHOLD_WIDTH) begin //if the trigger has been on for the threshold width (which is 4 rn)
-					read_en <= 0;
-					trigger_signal <= 0;
-			end
+			
 
 				
 		  end
