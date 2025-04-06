@@ -34,7 +34,7 @@ module bfloat16_mult (
 
 	always @ (*) begin
 		// Add exponents
-		sum_exp = (exp_a + exp_b) - 8'd127; //need to subtract by 127 to ensure exponent is properly aligned in the floating-point format
+		sum_exp = (exp_a + exp_b) - 8'd127; //need to subtract by 127 to ensure exponent is properly aligned in the floating-point format aka re-bias into bfloat16 format.
 		// final_exp = (exp_a + exp_b);
 		
 		
