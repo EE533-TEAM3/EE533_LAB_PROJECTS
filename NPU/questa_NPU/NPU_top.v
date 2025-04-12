@@ -13,7 +13,8 @@ module NPU_top(
 	
 	wire [15:0] output_layer_neuron [9:0];
 	
-	wire [15:0] final_inference;
+	wire [3:0 ] final_inference;
+	wire [15:0] final_computation;
 	
 	// wire [63:0] data_in; // used for testing. Eventually, it will be an input port for netfpga data to go thru.
 	
@@ -963,6 +964,8 @@ module NPU_top(
 	
 	// ======================== COMPARATOR START ===============================
 	Max_Find_10_Bfloat16 Final_Inference(
+		.clk(clk),
+		.reset(reset),
 		.input_0(output_layer_neuron[0]),
 		.input_1(output_layer_neuron[1]),
 		.input_2(output_layer_neuron[2]),
@@ -974,7 +977,8 @@ module NPU_top(
 		.input_8(output_layer_neuron[8]),
 		.input_9(output_layer_neuron[9]),
 		
-		.result(final_inference)
+		.prediction(final_inference),
+		.final_computation(final_computation)
 	
 	);
 	
