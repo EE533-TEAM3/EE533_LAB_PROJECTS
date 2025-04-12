@@ -38,6 +38,9 @@ module Output_Layer_Neuron (
 	reg [15:0] stage3_sum;
 	reg [15:0] stage4_sum;
 	
+	reg [15:0] dly_1_stage1_sum4; // I need this in order to propagate the sum from the first stage that is used in the final stage because there is an odd number of summations after stage 1.
+	reg [15:0] dly_2_stage1_sum4; // I need this in order to propagate the sum from the first stage that is used in the final stage because there is an odd number of summations after stage 1.
+	
 	
 // Multiply ------------------------
 	
@@ -138,7 +141,8 @@ module Output_Layer_Neuron (
 			
 	// Generate Stage 4 bfloat16_add units
 	bfloat16_add stage_4_adder (
-				.a(stage1_sum[4]),      
+				// .a(stage1_sum[4]), 
+				.a(dly_2_stage1_sum4),      				
 				.b(stage3_sum),  
 				.result(wire_stage4_sum)     // Output (sum of the pair)
 			);
@@ -178,6 +182,9 @@ module Output_Layer_Neuron (
 			// Stage4 register resetting
                 stage4_sum <= 16'b0;  // Set each element to 0
 				
+			dly_1_stage1_sum4 <= 16'b0;
+			dly_2_stage1_sum4 <= 16'b0;
+				
 			
             
 
@@ -203,9 +210,11 @@ module Output_Layer_Neuron (
             for (c = 0; c < 2; c = c + 1) begin
                 stage2_sum[c] <= wire_stage2_sum[c];  
             end
+			dly_1_stage1_sum4 <= stage1_sum[4];
 			
 			// Stage3 
                 stage3_sum <= wire_stage3_sum;  
+				dly_2_stage1_sum4 <= dly_1_stage1_sum4;
 			
 			// Stage4 
                 stage4_sum <= wire_stage4_sum;  

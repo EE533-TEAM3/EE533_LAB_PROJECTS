@@ -1,23 +1,23 @@
 module NPU_top(
-	input clk, reset
+	input clk, reset,
+	input [63:0] data_in
     
 );
 
     wire [15:0] wire_weight_from_rom [739:0];
 	
-	
-	
 	wire [15:0] wire_hiddenlayer_neuron_result [9:0];
 	
 	wire [15:0] wire_ReLu_result [9:0];
+	wire [15:0] pipe_ReLu_result [9:0];
 	
 	wire [15:0] output_layer_neuron [9:0];
 	
 	wire [15:0] final_inference;
 	
-	wire [63:0] data_in; // used for testing. Eventually, it will be an input port for netfpga data to go thru.
+	// wire [63:0] data_in; // used for testing. Eventually, it will be an input port for netfpga data to go thru.
 	
-	assign data_in = 64'b0000111000111100001000000011100000001100000011000011100000110000;
+	// assign data_in = 64'b0000100000011100000101000010110000111100000111000000100000001000;
 
 	
 
@@ -868,8 +868,44 @@ module NPU_top(
 	
 	// ======================== HIDDEN LAYER END ===============================
 
-
-
+	//IDK if I need this, but keeping in case of future use.
+	// ======================== PIPELINE BETWEEN HIDDEN AND OUTPUT START ===============================
+	/* // Just need to pipeline the ReLu results
+	ReLu_pipeline_reg ReLu_pipeline_reg(
+		.clk       (clk),
+		.reset     (reset),
+		.data_in_0 (wire_ReLu_result[0]),
+		.data_in_1 (wire_ReLu_result[1]),
+		.data_in_2 (wire_ReLu_result[2]),
+		.data_in_3 (wire_ReLu_result[3]),
+		.data_in_4 (wire_ReLu_result[4]),
+		.data_in_5 (wire_ReLu_result[5]),
+		.data_in_6 (wire_ReLu_result[6]),
+		.data_in_7 (wire_ReLu_result[7]),
+		.data_in_8 (wire_ReLu_result[8]),
+		.data_in_9 (wire_ReLu_result[9]),
+		
+		.data_out_0(pipe_ReLu_result[0]),
+		.data_out_1(pipe_ReLu_result[1]),
+		.data_out_2(pipe_ReLu_result[2]),
+		.data_out_3(pipe_ReLu_result[3]),
+		.data_out_4(pipe_ReLu_result[4]),
+		.data_out_5(pipe_ReLu_result[5]),
+		.data_out_6(pipe_ReLu_result[6]),
+		.data_out_7(pipe_ReLu_result[7]),
+		.data_out_8(pipe_ReLu_result[8]),
+		.data_out_9(pipe_ReLu_result[9])
+	
+	
+	
+	
+	); */
+	
+	
+	
+	
+	
+	// ======================== PIPELINE BETWEEN HIDDEN AND OUTPUT END ===============================
 
 	// ======================== OUTPUT LAYER START ===============================
 	
