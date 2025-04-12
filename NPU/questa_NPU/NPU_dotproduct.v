@@ -72,40 +72,16 @@ module NPU_dotproduct (
 );
 
 	// reg [15:0] weight_from_rom [63:0]; //64 weights in bfloat16 format
+	
+	
 	wire [15:0] weight_from_rom [63:0]; //64 weights in bfloat16 format
-
-	wire [15:0] summation;
     wire [15:0] rom_data;
-    // reg [7:0] rom_addr;  // 8-bit address for 192 entries
 	wire [15:0] selected_weights[63:0]; // Array to store selected weights
 	
 	integer z,y;
 	genvar x;
 	
-	
-	
-	
-	/* // Instantiate ROM that holds the weights (192 entries and will have to section it out accordingly for each neuron)
-    weight_rom weight_rom (
-		.clk(clk),
-		.reset(reset),
-		
-        .addr_a(rom_addr),
-        .din_a(),
-		.we_a(),
-		.re_a(1'b1),
-		.dout_a(rom_data),
-		
-		.addr_b(),
-        .din_b(),
-		.we_b(),
-		.re_b(1'b1),
-		.dout_b()
-		
-		
-    ); */
-	
-	
+	// Assign the weights to array to enable the for loops to access the values.
 	assign weight_from_rom[0]  = wire_weight_from_rom_0;
 	assign weight_from_rom[1]  = wire_weight_from_rom_1;
 	assign weight_from_rom[2]  = wire_weight_from_rom_2;
@@ -186,13 +162,14 @@ module NPU_dotproduct (
     endgenerate
 
 	
-	wire [15:0] wire_result;
-	// Intermediate registers for pipelined dot product
+	
+	// Intermediate wires for pipelined dot product
     wire [15:0] wire_partial_sum_stage1 [31:0];  // 32 intermediate sums (first stage)
     wire [15:0] wire_partial_sum_stage2 [15:0];  // 16 intermediate sums (second stage)
     wire [15:0] wire_partial_sum_stage3 [7:0];   // 8 intermediate sums (third stage)
     wire [15:0] wire_partial_sum_stage4 [3:0];   // 4 intermediate sums (fourth stage)
     wire [15:0] wire_partial_sum_stage5 [1:0];   // 2 intermediate sums (fifth stage)
+	wire [15:0] wire_result; //Connects the final sum to the output
 
 
 	// Intermediate registers for pipelined dot product
@@ -201,6 +178,7 @@ module NPU_dotproduct (
     reg [15:0] partial_sum_stage3 [7:0];   // 8 intermediate sums (third stage)
     reg [15:0] partial_sum_stage4 [3:0];   // 4 intermediate sums (fourth stage)
     reg [15:0] partial_sum_stage5 [1:0];   // 2 intermediate sums (fifth stage)
+	
 
 	genvar i,j,k,l,m,n;
 
@@ -275,78 +253,6 @@ module NPU_dotproduct (
 	always @ (posedge clk or posedge reset) begin
 	    if (reset) begin
 			result <= 16'b0;
-		 
-			/* // Initialize all weights to ROM
-			for (z = 0; z < 64; z = z + 1) begin
-				weight_from_rom[z] <= rom_data;  // assign rom_data to weight array
-				rom_addr <= z;  // assign address of rom
-			end */
-			
-			/* weight_from_rom[0]  <= wire_weight_from_rom_0;
-			weight_from_rom[1]  <= wire_weight_from_rom_1;
-			weight_from_rom[2]  <= wire_weight_from_rom_2;
-			weight_from_rom[3]  <= wire_weight_from_rom_3;
-			weight_from_rom[4]  <= wire_weight_from_rom_4;
-			weight_from_rom[5]  <= wire_weight_from_rom_5;
-			weight_from_rom[6]  <= wire_weight_from_rom_6;
-			weight_from_rom[7]  <= wire_weight_from_rom_7;
-			weight_from_rom[8]  <= wire_weight_from_rom_8;
-			weight_from_rom[9]  <= wire_weight_from_rom_9;
-			weight_from_rom[10] <= wire_weight_from_rom_10;
-			weight_from_rom[11] <= wire_weight_from_rom_11;
-			weight_from_rom[12] <= wire_weight_from_rom_12;
-			weight_from_rom[13] <= wire_weight_from_rom_13;
-			weight_from_rom[14] <= wire_weight_from_rom_14;
-			weight_from_rom[15] <= wire_weight_from_rom_15;
-			weight_from_rom[16] <= wire_weight_from_rom_16;
-			weight_from_rom[17] <= wire_weight_from_rom_17;
-			weight_from_rom[18] <= wire_weight_from_rom_18;
-			weight_from_rom[19] <= wire_weight_from_rom_19;
-			weight_from_rom[20] <= wire_weight_from_rom_20;
-			weight_from_rom[21] <= wire_weight_from_rom_21;
-			weight_from_rom[22] <= wire_weight_from_rom_22;
-			weight_from_rom[23] <= wire_weight_from_rom_23;
-			weight_from_rom[24] <= wire_weight_from_rom_24;
-			weight_from_rom[25] <= wire_weight_from_rom_25;
-			weight_from_rom[26] <= wire_weight_from_rom_26;
-			weight_from_rom[27] <= wire_weight_from_rom_27;
-			weight_from_rom[28] <= wire_weight_from_rom_28;
-			weight_from_rom[29] <= wire_weight_from_rom_29;
-			weight_from_rom[30] <= wire_weight_from_rom_30;
-			weight_from_rom[31] <= wire_weight_from_rom_31;
-			weight_from_rom[32] <= wire_weight_from_rom_32;
-			weight_from_rom[33] <= wire_weight_from_rom_33;
-			weight_from_rom[34] <= wire_weight_from_rom_34;
-			weight_from_rom[35] <= wire_weight_from_rom_35;
-			weight_from_rom[36] <= wire_weight_from_rom_36;
-			weight_from_rom[37] <= wire_weight_from_rom_37;
-			weight_from_rom[38] <= wire_weight_from_rom_38;
-			weight_from_rom[39] <= wire_weight_from_rom_39;
-			weight_from_rom[40] <= wire_weight_from_rom_40;
-			weight_from_rom[41] <= wire_weight_from_rom_41;
-			weight_from_rom[42] <= wire_weight_from_rom_42;
-			weight_from_rom[43] <= wire_weight_from_rom_43;
-			weight_from_rom[44] <= wire_weight_from_rom_44;
-			weight_from_rom[45] <= wire_weight_from_rom_45;
-			weight_from_rom[46] <= wire_weight_from_rom_46;
-			weight_from_rom[47] <= wire_weight_from_rom_47;
-			weight_from_rom[48] <= wire_weight_from_rom_48;
-			weight_from_rom[49] <= wire_weight_from_rom_49;
-			weight_from_rom[50] <= wire_weight_from_rom_50;
-			weight_from_rom[51] <= wire_weight_from_rom_51;
-			weight_from_rom[52] <= wire_weight_from_rom_52;
-			weight_from_rom[53] <= wire_weight_from_rom_53;
-			weight_from_rom[54] <= wire_weight_from_rom_54;
-			weight_from_rom[55] <= wire_weight_from_rom_55;
-			weight_from_rom[56] <= wire_weight_from_rom_56;
-			weight_from_rom[57] <= wire_weight_from_rom_57;
-			weight_from_rom[58] <= wire_weight_from_rom_58;
-			weight_from_rom[59] <= wire_weight_from_rom_59;
-			weight_from_rom[60] <= wire_weight_from_rom_60;
-			weight_from_rom[61] <= wire_weight_from_rom_61;
-			weight_from_rom[62] <= wire_weight_from_rom_62;
-			weight_from_rom[63] <= wire_weight_from_rom_63; */
-
 			
 			// ----- Reset partial_sum registers -----
 			// Stage1 register resetting
@@ -380,15 +286,6 @@ module NPU_dotproduct (
 		   
 		   
 		else begin 
-			/* // ---- Might be able to take out, but keeping for now to ensure ----
-					// Initialize all weights to ROM
-					for (y = 0; y < 64; y = y + 1) begin
-						weight_from_rom[y] <= rom_data;  // assign rom_data to weight array
-						rom_addr <= y;  // assign address of rom
-					end
-			// ---- End the might ---- */
-			
-			// ----- Summation Stages -----
 			
 			// Stage1 
             for (a = 0; a < 32; a = a + 1) begin

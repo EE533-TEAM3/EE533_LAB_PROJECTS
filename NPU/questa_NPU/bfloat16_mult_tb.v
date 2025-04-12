@@ -51,6 +51,11 @@ module tb_bfloat16_mult;
 	a = 16'b0011110000100100;  // bfloat16 representation of 0.01
     b = 16'b0011101110100100;  // bfloat16 representation of 0.005
     #10;  // Wait for result
+
+// Test case 7: multiply with 0
+	a = 16'b0000000000000000;  // bfloat16 representation of 0.01
+    b = 16'h3f6a;  // bfloat16 representation of 0.005
+    #10;  // Wait for result
 	
 
 

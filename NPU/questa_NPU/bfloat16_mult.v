@@ -17,8 +17,11 @@ module bfloat16_mult (
 	
 	
 	// Need to make 9 bit wide in order check for overflow because the mantissa additiona is actually 8 bits wide (since we include the leading 1)
-	wire [7:0] hiddenbit_mant_a = {1'b1, mant_a}; // this is 1.mantissa ; we use this becuase when we shift, the first shift needs to be 1, not 0.
-	wire [7:0] hiddenbit_mant_b = {1'b1, mant_b}; // this is 1.mantissa ; we use this becuase when we shift, the first shift needs to be 1, not 0.
+	// wire [7:0] hiddenbit_mant_a = {1'b1, mant_a}; // this is 1.mantissa ; we use this becuase when we shift, the first shift needs to be 1, not 0.
+	// wire [7:0] hiddenbit_mant_b = {1'b1, mant_b}; // this is 1.mantissa ; we use this becuase when we shift, the first shift needs to be 1, not 0.
+	
+	reg [7:0] hiddenbit_mant_a ;
+	reg [7:0] hiddenbit_mant_b ;
 
 	reg [15:0] product_mant; //needs to be 16 bits because that's the max width for multiplying two 8-bit binaries
 	
@@ -35,13 +38,32 @@ module bfloat16_mult (
 	always @ (*) begin
 		// Add exponents
 		sum_exp = (exp_a + exp_b) - 8'd127; //need to subtract by 127 to ensure exponent is properly aligned in the floating-point format aka re-bias into bfloat16 format.
-		// final_exp = (exp_a + exp_b);
+		final_exp = sum_exp;
 		
+		
+		//====Check if mantissa is 0, make leading bit 0====
+		if (exp_a == 16'h0000) begin //Denormalized value, leading 0
+			hiddenbit_mant_a = {1'b0, mant_a};
+		end
+		else begin
+			hiddenbit_mant_a = {1'b1, mant_a};
+		end
+		
+		if (exp_b == 16'h0000) begin //Denormalized value, leading 0
+			hiddenbit_mant_b = {1'b0, mant_b};
+		end
+		else begin
+			hiddenbit_mant_b = {1'b1, mant_b};
+		end 
+		
+		
+		
+
 		
 		// Multiply Mantissas
 		product_mant = hiddenbit_mant_a * hiddenbit_mant_b;
 		
-		final_exp = sum_exp;
+		
 		shift_product_mant = product_mant;
 		
 		for (i = 0; i<7 ; i=i+1) begin // Need this left shift in order to put back to normalized form after multiplying
@@ -61,6 +83,12 @@ module bfloat16_mult (
 		
 		final_mant = shift_product_mant[13:7];
 		
+		//====Check if an input is zero, make everything zero====
+		if ((a == 16'h0000) || (b == 16'h0000) ) begin // If multiplying by zero
+			final_sign = 1'b0;
+			final_exp = 8'h00;
+			final_mant = 7'b0000000;
+		end
 		
 		
 		
